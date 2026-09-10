@@ -2,7 +2,7 @@
 
 本文件记录 `@xiezuo/plugin-icon-library` 的版本变更，格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## 1.0.0 - 2026-09-10
+## [1.0.0] - 2026-09-10
 
 首个发行版本。
 
@@ -24,3 +24,5 @@
 
 - 图标名中的 `Xz` 前缀是稳定契约，用于避免覆盖系统图标；升级版本不会改动已发布图标的名称。
 - 兼容 NocoBase 2.x（构建基线 2.2.9）与 React 18。
+
+[1.0.0]: https://github.com/charce526/plugin-icon-library/releases/tag/v1.0.0

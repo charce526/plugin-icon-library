@@ -16,6 +16,11 @@
   ],
   "author": "偕作BIM (xzbim)",
   "license": "MIT",
+  "homepage": "https://github.com/charce526/plugin-icon-library#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charce526/plugin-icon-library.git"
+  },
   "main": "./dist/server/index.js",
   "engines": {
     "node": ">=18"

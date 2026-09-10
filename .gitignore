@@ -2,9 +2,10 @@
 node_modules/
 dist/
 
-# 本地发行产物（由 scripts/release.mjs 生成；正式发行包在 GitHub Releases）
-release/
-*.tgz
+# 发行包目录：release/plugin-icon-library-<版本>.tgz 需要入库，
+# 由 .github/workflows/release.yml 在打 tag / 推送时自动创建 Release 并上传。
+release/*
+!release/plugin-icon-library-*.tgz
 
 # 日志与临时文件
 *.log

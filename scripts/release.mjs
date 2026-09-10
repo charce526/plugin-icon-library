@@ -60,7 +60,8 @@ fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
 console.log(`[release] package.json 版本：${previousVersion} -> ${version}`);
 
 const changelogPath = path.join(pluginDir, 'CHANGELOG.md');
-if (fs.existsSync(changelogPath) && !fs.readFileSync(changelogPath, 'utf8').includes(`## ${version}`)) {
+const changelogHeading = new RegExp(`^##+ \\[?${version.replace(/\./g, '\\.')}\\]?`, 'm');
+if (fs.existsSync(changelogPath) && !changelogHeading.test(fs.readFileSync(changelogPath, 'utf8'))) {
   console.warn(`[release] 提示：CHANGELOG.md 中还没有「## ${version}」段落，建议先补上本次更新说明。`);
 }
 

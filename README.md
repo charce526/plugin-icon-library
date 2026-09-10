@@ -1,6 +1,12 @@
 # @xiezuo/plugin-icon-library
 
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![NocoBase](https://img.shields.io/badge/NocoBase-2.x-2f54eb.svg)](https://docs.nocobase.com/cn/plugin-development/)
+
 为 NocoBase 2.x 的菜单、按钮、页面标签等可视化配置位置扩展图标库。
+
+- 仓库：https://github.com/charce526/plugin-icon-library
+- 发行包：https://github.com/charce526/plugin-icon-library/releases
 
 ## 功能
 
@@ -70,9 +76,9 @@ node scripts/generate-number-icons.mjs        # MDI 数字图标 -> src/client/n
 
 ## 发布
 
-发行包为 `plugin-icon-library-<版本>.tgz`，随 GitHub Releases 发布，包内 `package.json` 的 `version` 与发行版本号一致。
+发行包为 `plugin-icon-library-<版本>.tgz`，随 GitHub Releases 发布；发行包内 `package.json` 的 `version` 与发行版本号一致。
 
-### 一键发行（本地）
+### 一键发行
 
 ```bash
 node scripts/release.mjs 1.0.1        # 写入版本号 -> 编译 -> 生成 release/plugin-icon-library-1.0.1.tgz
@@ -80,7 +86,9 @@ git add -A && git commit -m "chore: release 1.0.1"
 git tag v1.0.1 && git push origin main --tags
 ```
 
-推送 `v*` 标签后，`.github/workflows/release.yml` 会以同一版本号在 NocoBase 工作区中重新编译，自动创建 Release 并上传发行包；也可以跳过 CI，直接把 `release/*.tgz` 拖到 Release 附件中。
+推送 `v*` 标签（或推送包含 `release/*.tgz` 改动的 main 提交）后，`.github/workflows/release.yml` 会校验「`package.json` 版本 = 发行包文件名版本 = 包内 `package.json` 版本」三者一致，然后自动创建 Release 并上传发行包。
+
+发行包由本地构建而不是在 CI 中构建：插件编译依赖 NocoBase 工作区的 `@nocobase/build`，在 CI 里需要完整检出并安装 NocoBase 仓库（耗时长、易受上游改动影响）；发行包仅 130 KB 左右，直接随源码提交更稳定、可复现。
 
 ### 版本约定
 
