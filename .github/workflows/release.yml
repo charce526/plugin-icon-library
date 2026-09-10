@@ -1,0 +1,104 @@
+name: Release
+
+# 推送 v* 标签（或手动触发）时：以标签版本号重新编译插件，创建 Release 并上传发行包。
+# 编译需要 NocoBase 工作区（@nocobase/build），因此这里额外检出 NocoBase 仓库，
+# 把本仓库作为 packages/plugins/@xiezuo/plugin-icon-library 放入后再构建。
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '发布版本号，例如 1.0.1（会写入发行包内的 package.json）'
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  PLUGIN_NAME: '@xiezuo/plugin-icon-library'
+  PLUGIN_PATH: packages/plugins/@xiezuo/plugin-icon-library
+  NOCOBASE_REPO: nocobase/nocobase
+  NOCOBASE_REF: main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出插件仓库
+        uses: actions/checkout@v4
+        with:
+          path: plugin
+
+      - name: 检出 NocoBase 作为构建工作区
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.NOCOBASE_REPO }}
+          ref: ${{ env.NOCOBASE_REF }}
+          path: app
+
+      - name: 配置 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 解析发行版本号
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-.+][0-9A-Za-z.-]+)?$ ]]; then
+            echo "非法版本号：$VERSION" >&2
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: 把插件放入 NocoBase 工作区
+        run: |
+          mkdir -p "app/${PLUGIN_PATH}"
+          rsync -a --delete \
+            --exclude '.git' --exclude 'dist' --exclude 'node_modules' --exclude 'release' \
+            ./plugin/ "app/${PLUGIN_PATH}/"
+
+      - name: 将发行版本号写入发行包（package.json）
+        run: |
+          node -e '
+            const fs = require("fs");
+            const file = process.argv[1];
+            const pkg = JSON.parse(fs.readFileSync(file, "utf8"));
+            pkg.version = process.argv[2];
+            fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + "\n");
+            console.log(`version -> ${pkg.version}`);
+          ' "app/${PLUGIN_PATH}/package.json" "${{ steps.version.outputs.version }}"
+
+      - name: 安装依赖
+        working-directory: app
+        run: yarn install --ignore-engines --network-timeout 600000
+
+      - name: 编译并打包
+        working-directory: app
+        run: yarn build ${{ env.PLUGIN_NAME }} --tar
+
+      - name: 收集发行包
+        run: |
+          TARBALL=$(ls "app/storage/tar/${PLUGIN_NAME}/${PLUGIN_NAME}-"*.tgz | head -n 1)
+          ASSET="$(basename "$TARBALL")"
+          cp "$TARBALL" "$ASSET"
+          echo "asset=$ASSET" >> "$GITHUB_OUTPUT"
+          ls -lh "$ASSET"
+        id: collect
+
+      - name: 创建 Release 并上传发行包
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          files: ${{ steps.collect.outputs.asset }}
+          generate_release_notes: true
+          draft: false

@@ -1,0 +1,49 @@
+{
+  "name": "@xiezuo/plugin-icon-library",
+  "version": "1.0.0",
+  "displayName": "扩展图标库",
+  "displayName.zh-CN": "扩展图标库",
+  "displayName.en-US": "Extended Icon Library",
+  "description": "为 NocoBase 菜单、按钮及页面配置提供更多图标和语义分类。",
+  "description.zh-CN": "为 NocoBase 菜单、按钮及页面配置提供更多图标和语义分类。",
+  "description.en-US": "Provides an extended icon library with semantic categories for NocoBase menus, buttons and page configuration.",
+  "keywords": [
+    "nocobase-plugin",
+    "icons",
+    "icon-picker",
+    "menu",
+    "ui"
+  ],
+  "author": "偕作BIM (xzbim)",
+  "license": "MIT",
+  "main": "./dist/server/index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "client.js",
+    "server.js",
+    "client.d.ts",
+    "server.d.ts",
+    "CHANGELOG.md",
+    "LICENSE-THIRD-PARTY"
+  ],
+  "nocobase": {
+    "defaultEnabled": false,
+    "supportedVersions": [
+      "2.x"
+    ],
+    "editionLevel": 0
+  },
+  "scripts": {
+    "postbuild": "node scripts/sync-node-modules.js"
+  },
+  "devDependencies": {
+    "lucide-react": "^0.544.0"
+  },
+  "peerDependencies": {
+    "@nocobase/client": "2.x",
+    "@nocobase/client-v2": "2.x",
+    "@nocobase/server": "2.x"
+  }
+}
