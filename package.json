@@ -14,7 +14,22 @@
     "menu",
     "ui"
   ],
-  "author": "偕作BIM (xzbim)",
+  "author": {
+    "name": "偕作BIM",
+    "url": "https://www.xzbim.cn"
+  },
+  "contributors": [
+    {
+      "name": "偕作BIM",
+      "url": "https://www.xzbim.cn"
+    }
+  ],
+  "maintainers": [
+    {
+      "name": "偕作BIM",
+      "url": "https://www.xzbim.cn"
+    }
+  ],
   "license": "MIT",
   "homepage": "https://github.com/charce526/plugin-icon-library#readme",
   "repository": {
