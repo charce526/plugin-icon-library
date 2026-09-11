@@ -26,6 +26,8 @@ An extended icon-library plugin for NocoBase, developed and maintained by [Xiezu
 
 ## Installation
 
+### Method 1: Upload the release package (recommended)
+
 Download `plugin-icon-library-1.0.0.tgz` from [GitHub Releases](https://github.com/charce526/plugin-icon-library/releases), then upload, install and enable it in the NocoBase Plugin Manager.
 
 Package name:
@@ -35,6 +37,14 @@ Package name:
 ```
 
 Once enabled, the extended icons appear in the icon picker.
+
+### Method 2: Source install (git clone)
+
+1. Clone this repository into `packages/plugins/@xiezuo/plugin-icon-library` of your NocoBase source tree;
+2. Run `yarn install` in the NocoBase project root (all icon data is inlined into the build output, so there are no extra runtime dependencies);
+3. Restart NocoBase and enable the plugin in Plugin Manager.
+
+> The build output `dist/` is committed in this repository, so no build step is required for a source install.
 
 ## Source development
 

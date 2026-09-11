@@ -26,6 +26,8 @@
 
 ## 安装
 
+### 方式一：上传发行包（推荐）
+
 从 [GitHub Releases](https://github.com/charce526/plugin-icon-library/releases) 下载 `plugin-icon-library-1.0.0.tgz`，在 NocoBase 的“插件管理器”中上传、安装并启用。
 
 插件包名：
@@ -35,6 +37,14 @@
 ```
 
 启用后图标选择器即包含扩展图标。
+
+### 方式二：源码安装（git 克隆）
+
+1. 将本仓库克隆到 NocoBase 源码目录的 `packages/plugins/@xiezuo/plugin-icon-library`；
+2. 在 NocoBase 项目根目录执行 `yarn install`（本插件的图标数据已内联进构建产物，运行时无额外依赖）；
+3. 重启 NocoBase，在“插件管理器”中启用该插件。
+
+> 本仓库已提交构建产物 `dist/`，源码安装无需再执行构建。
 
 ## 源码开发
 
