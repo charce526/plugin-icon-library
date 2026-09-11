@@ -1,6 +1,6 @@
 # 依赖与构建产物
+# dist/ 需要入库：NocoBase 插件通过 git 安装时会直接加载 dist 产物，缺失将导致插件无法启用
 node_modules/
-dist/
 
 # 发行包目录：release/plugin-icon-library-<版本>.tgz 需要入库，
 # 由 .github/workflows/release.yml 在打 tag / 推送时自动创建 Release 并上传。
