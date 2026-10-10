@@ -364,6 +364,16 @@ const missingAliasTargets = Object.entries(ALIAS_DUPES)
   .filter(([, targets]) => !targets.some((target) => hasAntd(target)))
   .map(([name]) => name);
 
+// Published names are a persistent-data contract, even if future dedup rules change.
+const manifestPath = path.join(scriptDir, 'icon-manifest.json');
+const publishedNames = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+const lucideExports = require('lucide-react');
+for (const name of publishedNames) {
+  if (!lucideExports[name]) throw new Error(`Published icon missing from dependency: ${name}. Keep the previous dependency or provide a compatible replacement.`);
+  if (!kept.some((icon) => icon.pascal === name)) kept.push({ pascal: name });
+}
+kept.sort((a, b) => a.pascal.localeCompare(b.pascal));
+
 console.log(`antd 基础图标名: ${antdNames.size}`);
 console.log(`lucide 正式图标: ${lucideIcons.length}`);
 console.log(`  与 antd 同名被跳过: ${skipped.antdSameName.length}`);
@@ -397,4 +407,5 @@ ${mapLines}
 `;
 
 fs.writeFileSync(outFile, content, 'utf8');
+fs.writeFileSync(manifestPath, JSON.stringify(kept.map((icon) => icon.pascal), null, 2) + '\n');
 console.log(`\n已写入 ${path.relative(process.cwd(), outFile)}`);

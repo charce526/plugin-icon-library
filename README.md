@@ -1,98 +1,124 @@
-# @xiezuo/plugin-icon-library
+# NocoBase 扩展图标库
 
-[English](./README_EN.md) | **简体中文**
+[English](./README_EN.md) | 简体中文
 
-由[偕作BIM](https://www.xzbim.cn)开发和维护的 NocoBase 扩展图标库插件。为菜单、按钮、页面标签等可视化配置位置提供 1400+ 个图标与语义分类。
+为 NocoBase 的菜单、按钮、页签和图标字段提供统一的图标选择器，支持中文搜索、自定义 SVG，以及图标颜色和大小设置。
 
-## 主要功能
+由 [偕作 BIM](https://www.xzbim.cn) 开发维护。插件包名：`@xiezuo/plugin-icon-library`，当前版本：**2.0.0**。
 
-- 内置 1426 个图标，全部来自开源图标库：
-  - **lucide**（ISC）1371 个线性图标，已剔除与 Ant Design 同名或语义重复的部分（例如 `User/Users/UserPlus/Trash/Pencil/Settings` 不再重复提供）；
-  - **Material Design Icons / MDI**（Apache-2.0）55 个数字序号图标：`0`~`10`，每个数字有实心 / 圆形 / 圆形描边 / 方形 / 方形描边 5 种样式；
-- 软件开发 / 网页设计高频图标强制保留，不会被去重规则误删：`Terminal`、`Server`、`Package`、`Braces/Brackets`、`Regex`、`Command`、`Git 系列`、`Github/Gitlab/Figma/Chrome`、`Database`、`Blocks/Component`、`Bot/Sparkles`、`MonitorSmartphone`、`MousePointer` 等；
-- 27 个分类，按常见图标站的分类习惯组织：数字与序号、通用操作、箭头与方向、编辑与布局、用户与人物、商务与办公、文件与文档、通信与消息、多媒体与娱乐、图表与数据、开发与技术、设备与硬件、建筑与家居、交通与运输、时间与日历、天气与自然、生活与饮食、医疗与健康、教育与科研、购物与电商、安全与隐私、社交与品牌、状态与符号，另有系统图标的线框 / 实底 / 双色分类；
-- 支持英文名称与中文关键词搜索（`序号`、`终端`、`服务器`、`useradd → 用户` 都能命中），命中范围同时覆盖扩展图标与系统图标；
-- 图标同时注册进 **两套** 图标注册表（`@nocobase/client` 与 `@nocobase/client-v2`），因此菜单、页签、按钮（FlowEngine 渲染的表格行按钮等）的图标都能正常显示；
-- 图标选择器接管旧版 schema 渲染与 FlowEngine 设置表单；
-- 图标数量较多，弹层按 240 个一页滚动加载，避免一次性渲染卡顿；
-- 图标名称统一使用 `Xz` 前缀 + `Outlined` 后缀，避免覆盖系统图标，保存值仍是普通字符串；
-- 复用 NocoBase 原生 `Icon` 注册机制：无需数据表、无服务端接口、无外部网络请求。
+## 功能
 
-## 兼容性
+- **1,426 个扩展图标**：1,371 个 Lucide 线性图标，以及 55 个数字序号图标。图标数据随插件打包，使用内置图标不依赖外部图标服务。
+- **统一搜索**：同时查找 NocoBase 系统图标、扩展图标和已导入图标，支持英文名称、中文关键词、多词查询和完整保存标识。
+- **准确的中文关键词**：内置词库覆盖 2,257 个图标、1,885 个基础名称，包含英文名称的直接中文翻译。
+- **分类浏览**：按图标样式、语义分类筛选，并提供建筑工程、项目管理、财务成本、客户管理四个行业分类。
+- **收藏与最近使用**：收藏最多 100 个，最近使用最多 30 个，按应用和用户保存在当前浏览器中。
+- **颜色与大小**：选择颜色及大小档位，先查看按钮、菜单、页签的使用效果，再决定是否应用。
+- **共享 SVG**：通过文件或源码导入图标，保存到应用数据库，其他已登录用户可加载使用。
+- **V1 / V2 入口**：接入传统页面和 V2 设置表单，包括移动菜单设置与 V2 图标字段。
 
-- 主要支持：NocoBase 2.x（构建基线 2.2.9）
-- 构建环境：Node.js 18 或更高版本
-- React 18
+## 环境与兼容性
 
-## 安装
+面向 NocoBase 2.x，当前构建与回归基线为 **NocoBase 2.2.10**、React 18。请使用对应 NocoBase 版本要求的 Node.js 环境；其他 NocoBase 小版本应先在测试环境验收。
 
-### 方式一：上传发行包（推荐）
+插件同时提供 V1、V2 客户端及服务端入口。V2 页面从 `/v2/admin/` 进入。
 
-从 [GitHub Releases](https://github.com/charce526/plugin-icon-library/releases) 下载 `plugin-icon-library-1.0.0.tgz`，在 NocoBase 的“插件管理器”中上传、安装并启用。
+## 安装与升级
 
-插件包名：
+1. 从 [GitHub Releases](https://github.com/charce526/plugin-icon-library/releases) 获取对应版本安装包。2.0.0 的安装包文件名为 `plugin-icon-library-2.0.0.tgz`。
+2. 升级已有应用前，备份应用数据库和现有插件版本。
+3. 在 NocoBase 插件管理器中上传安装包，安装或升级并启用插件。
+4. 按 NocoBase 提示完成升级、重启服务，并刷新浏览器。
 
-```text
-@xiezuo/plugin-icon-library
+启用后，已接入的图标选择位置会显示扩展选择器。服务端在插件加载时创建缺失的自定义图标表 `xzIconLibraryIcons`；仅替换浏览器资源不能启用 SVG 导入。
+
+已发布的 `Xz…Outlined` 图标标识保持兼容，已有菜单和按钮的保存值无需改写。自定义图标存于应用数据库，应随应用备份保存。
+
+### 源码安装
+
+将仓库克隆到 NocoBase 工作区的 `packages/plugins/@xiezuo/plugin-icon-library`，在工作区根目录执行 `yarn install`，然后通过插件管理器启用插件。仓库包含 `dist/` 构建产物；修改源码后需要重新构建。
+
+## 使用方式
+
+### 选择与预览
+
+打开图标选择器，输入名称或中文关键词，也可先选择分类。点击一个图标后，右侧显示名称、关键词、颜色和大小设置；窄屏下详情可展开查看。
+
+点击图标只设置待选项。点击 **应用** 才提交图标，点击 **取消** 或关闭选择器会丢弃本次调整。悬停不会切换图标预览；最近使用记录仅在应用后更新。
+
+上方图标用于固定放大展示，场景预览位于详情面板底部，可查看按钮、菜单、页签的效果，并可折叠。
+
+### 颜色
+
+未设置固定颜色时，颜色控件显示斜杠，图标保留原色或跟随主题。选色完成后更新预览，减少取色拖动时的卡顿。
+
+已设置颜色的图标重新打开时，会回显保存的颜色。再次编辑可恢复原色；未设置固定颜色的图标可恢复默认。双色图标保留明暗层次，名称和提示不会累积历史色号。
+
+### 大小
+
+| 档位 | 使用尺寸 |
+| --- | --- |
+| 紧凑 | 12 px |
+| 默认 | 原有尺寸，继承所在控件的字号 |
+| 放大 | 20 px |
+| 加大 | 24 px |
+
+大小设置只影响场景预览，不改变上方固定展示的图标。点击应用后保存使用尺寸，重新打开可继续编辑。最终布局由所在控件决定，控件显式指定的 `size` 可覆盖保存的默认尺寸。
+
+颜色或大小发生变化时，插件生成独立的共享 SVG 变体，并保存新图标的标识，保留源图标及其他位置的引用。此操作需要 SVG 导入权限。
+
+## SVG 导入与权限
+
+点击 **导入 SVG**，填写图标名称、搜索关键词，然后上传文件或粘贴 SVG 源码。
+
+| 项目 | 限制 |
+| --- | --- |
+| SVG 文件 | 不超过 50,000 字节 |
+| SVG 源码 | 不超过 50,000 字符 |
+| 坐标范围 | 必须包含有效的 `viewBox` |
+| 节点数量 | 最多 256 个 |
+| 嵌套深度 | 最多 10 层 |
+| 共享图标总量 | 最多 5,000 条，包含导入图标及颜色、大小变体 |
+
+支持 `path`、`g`、`circle`、`ellipse`、`rect`、`line`、`polyline`、`polygon` 和受限绘制属性。不支持脚本、事件、CSS 样式、外链、图片、文本、渐变、滤镜及 `use`。导入复杂 SVG 前，可先转换为路径；使用 `currentColor` 可跟随所在控件的文字颜色。
+
+共享图标读取需要登录；导入及保存颜色、大小变体需要角色拥有权限片段 `pm.plugin-icon-library`。普通登录不自动授予导入权限。已有图标标识不可覆盖，本版不提供删除，避免已保存的引用失效。
+
+收藏和最近使用属于浏览器偏好，不会同步到其他设备；共享 SVG 属于应用数据，可随数据库备份恢复。
+
+## 开发与验证
+
+在 NocoBase 工作区根目录构建，不生成安装包：
+
+```sh
+yarn build @xiezuo/plugin-icon-library
 ```
 
-启用后图标选择器即包含扩展图标。
+在插件目录检查词库和组件：
 
-### 方式二：源码安装（git 克隆）
-
-1. 将本仓库克隆到 NocoBase 源码目录的 `packages/plugins/@xiezuo/plugin-icon-library`；
-2. 在 NocoBase 项目根目录执行 `yarn install`（本插件的图标数据已内联进构建产物，运行时无额外依赖）；
-3. 重启 NocoBase，在“插件管理器”中启用该插件。
-
-> 本仓库已提交构建产物 `dist/`，源码安装无需再执行构建。
-
-## 源码开发
-
-将仓库放置在 NocoBase 源码的 `packages/plugins/@xiezuo/plugin-icon-library` 目录，然后安装依赖并构建：
-
-```bash
-yarn install
-yarn build @xiezuo/plugin-icon-library                # 仅编译，产物在 dist/
-yarn build @xiezuo/plugin-icon-library --tar          # 编译并打包成 tgz
+```sh
+node scripts/generate-keywords.cjs --check
+node scripts/check-keywords.cjs
+node scripts/check-v2.cjs
+node scripts/check-v2.cjs --legacy
+node scripts/check-server.cjs
 ```
 
-打包产物：`storage/tar/@xiezuo/plugin-icon-library-<version>.tgz`，其中包含 `package.json`、`README.md`、`LICENSE`、`LICENSE-THIRD-PARTY`、`CHANGELOG.md`、入口文件（`client.js`/`server.js` 及其 `.d.ts`）与 `dist/`；源码目录 `src/` 与 `scripts/` 不会进包。
+服务端测试默认需要 SQLite 驱动；本地已有 MariaDB 时可设置 `ICON_TEST_MARIADB=1`，脚本使用隔离表前缀并清理测试表。前端测试使用 React、Ant Design、Formily、JSDOM 和已安装的 V2 Icon 实现；V1 回归使用兼容适配器，不能代替真实 V1 登录页面验收。
 
-`package.json` 里的 `postbuild` 只是一个本地开发钩子：本机文件系统无法遍历符号链接，构建后用它把产物复制到 `node_modules/@xiezuo/plugin-icon-library`，使应用能解析到插件。在支持符号链接的环境中可以删除该 `scripts` 字段。
+在插件目录准备版本安装包：
 
-图标清单都是生成出来的，升级图标库后重新生成即可（生成结果会直接提交到 `src/client/`，运行时不依赖这些图标包）：
-
-```bash
-node scripts/generate-icons.mjs               # lucide 图标 -> src/client/lucide-icons.ts
-node scripts/generate-icons.mjs --report      # 只看过滤统计
-node scripts/generate-number-icons.mjs        # MDI 数字图标 -> src/client/number-icons.generated.ts
+```sh
+node scripts/release.mjs 2.0.0
+node scripts/check-package.cjs
 ```
 
-- `generate-icons.mjs`：读取 `lucide-react` 的正式图标（跳过只有 re-export 的别名文件），再按「与 antd 图标同名」「`ALIAS_DUPES` 语义重复映射」两轮过滤，`FORCE_KEEP` 里的开发/网页高频图标不参与过滤；
-- `generate-number-icons.mjs`：从 `@mdi/js` 提取 `numeric-0` ~ `numeric-10` 及其圆形/方形变体的路径数据（优先用本地 node_modules，没有则 `npm pack` 下载到系统临时目录）。
+安装包及校验文件输出到 `release/`。此命令只构建本地文件，不创建标签、不推送代码，也不发布 GitHub Release。GitHub 发布仅由版本标签或手动工作流触发，需在确认验收后进行。
 
-## 图标命名
+`postbuild` 检查词库并同步本地运行文件。安装包不包含源码、生成器、开发日志和临时文件。保留生成清单中的既有图标标识，升级图标依赖后应重新验证词库、数量及许可证。
 
-扩展图标统一使用 `Xz` 前缀 + `Outlined` 后缀，例如 `XzTerminalOutlined`。前缀用于避免覆盖系统图标，**已发布图标的名称视为稳定契约**，升级版本不会重命名或移除，用户已保存的图标值不会失效。
+## 更新与许可
 
-## 第三方图标许可
+版本变更见 [CHANGELOG.md](./CHANGELOG.md)，源码见 [GitHub 仓库](https://github.com/charce526/plugin-icon-library)。
 
-- [lucide](https://github.com/lucide-icons/lucide) — ISC License（其中派生自 Feather 的部分为 MIT）
-- [Material Design Icons](https://github.com/Templarian/MaterialDesign-JS) — Apache-2.0
-
-这些图标的数据与组件实现会被内联进 `dist/client/index.js`，完整的许可原文见 [LICENSE-THIRD-PARTY](./LICENSE-THIRD-PARTY)。
-
-## 作者与维护
-
-- 作者： [偕作BIM](https://www.xzbim.cn)
-- 维护者： [偕作BIM](https://www.xzbim.cn)
-- 包名：`@xiezuo/plugin-icon-library`
-- 源码仓库：[charce526/plugin-icon-library](https://github.com/charce526/plugin-icon-library)
-
-## 更新日志
-
-见 [CHANGELOG.md](./CHANGELOG.md)。
-
-## 许可
-
-[MIT](./LICENSE)
+插件采用 [MIT 许可证](./LICENSE)。Lucide 图标采用 ISC 许可证，部分派生内容为 MIT；数字图标来自 Material Design Icons，采用 Apache-2.0。完整声明见 [LICENSE-THIRD-PARTY](./LICENSE-THIRD-PARTY)。

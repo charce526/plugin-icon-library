@@ -1,34 +1,28 @@
-/**
- * 将构建产物同步到 node_modules，供 NocoBase 运行时按包名加载插件。
- *
- * 正常情况下 NocoBase 启动时会用 junction / 符号链接把 packages/plugins 下的插件链接到
- * node_modules。当前机器（Windows）无法遍历这类链接（scandir 报 UNKNOWN: unknown error），
- * 因此这里改为把构建产物真实复制一份到 node_modules，效果等价。
- */
+// Local development: preserve working links; synchronize runtime files only.
 const fs = require('fs');
 const path = require('path');
-
 const pkgDir = path.resolve(__dirname, '..');
 const pkg = require(path.join(pkgDir, 'package.json'));
-const targetDir = path.resolve(pkgDir, '..', '..', '..', '..', 'node_modules', pkg.name);
-
+if (pkg.name !== '@xiezuo/plugin-icon-library') throw new Error('Unexpected package');
+const workspace = path.resolve(pkgDir, '../../../..');
+if (!fs.existsSync(path.join(workspace,'package.json'))) throw new Error('Workspace not found');
+const modules = path.join(workspace,'node_modules');
+const target = path.join(modules,'@xiezuo','plugin-icon-library');
+let linked = false;
 try {
-  // 已存在的链接（junction/lstat 为符号链接）先删掉，再创建真实目录
-  if (fs.lstatSync(targetDir).isSymbolicLink()) {
-    fs.unlinkSync(targetDir);
+  if (fs.lstatSync(target).isSymbolicLink()) {
+    try { linked = fs.realpathSync(target) === fs.realpathSync(pkgDir); fs.readdirSync(target); } catch { linked = false; }
+    if (!linked) fs.unlinkSync(target);
   } else {
-    fs.rmSync(targetDir, { recursive: true, force: true });
+    if (!fs.realpathSync(target).startsWith(fs.realpathSync(modules) + path.sep)) throw new Error('Target outside node_modules');
+    fs.rmSync(target,{recursive:true,force:true});
   }
-} catch (error) {
-  if (error.code !== 'ENOENT') throw error;
+} catch (error) { if(error.code !== 'ENOENT') throw error; }
+if (!linked) {
+  fs.mkdirSync(target,{recursive:true});
+  for (const item of ['package.json','dist','README.md','README_EN.md','LICENSE',...pkg.files.filter(item => !item.includes('*'))]) {
+    const source = path.join(pkgDir,item);
+    if(fs.existsSync(source)) fs.cpSync(source,path.join(target,item),{recursive:true});
+  }
 }
-
-fs.mkdirSync(targetDir, { recursive: true });
-
-const ignored = new Set(['src', 'node_modules', 'scripts', '.git']);
-for (const item of fs.readdirSync(pkgDir)) {
-  if (ignored.has(item)) continue;
-  fs.cpSync(path.join(pkgDir, item), path.join(targetDir, item), { recursive: true });
-}
-
-console.log(`[sync-node-modules] ${pkg.name} -> ${targetDir}`);
+console.log('[sync-node-modules] Runtime synchronized');

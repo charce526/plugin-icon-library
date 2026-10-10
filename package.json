@@ -1,12 +1,12 @@
 {
   "name": "@xiezuo/plugin-icon-library",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "displayName": "扩展图标库",
   "displayName.zh-CN": "扩展图标库",
   "displayName.en-US": "Extended Icon Library",
-  "description": "为 NocoBase 菜单、按钮及页面配置提供更多图标和语义分类。",
-  "description.zh-CN": "为 NocoBase 菜单、按钮及页面配置提供更多图标和语义分类。",
-  "description.en-US": "Provides an extended icon library with semantic categories for NocoBase menus, buttons and page configuration.",
+  "description": "为 NocoBase 提供扩展图标、中文搜索、SVG 导入及颜色和大小设置。",
+  "description.zh-CN": "为 NocoBase 提供扩展图标、中文搜索、SVG 导入及颜色和大小设置。",
+  "description.en-US": "Extended icons, Chinese search, SVG imports, and color and size settings for NocoBase.",
   "keywords": [
     "nocobase-plugin",
     "icons",
@@ -44,7 +44,11 @@
     "client.js",
     "server.js",
     "client.d.ts",
+    "client-v2.js",
+    "client-v2.d.ts",
     "server.d.ts",
+    "dist/**/*.d.ts",
+    "README_EN.md",
     "CHANGELOG.md",
     "LICENSE-THIRD-PARTY"
   ],
@@ -56,14 +60,15 @@
     "editionLevel": 0
   },
   "scripts": {
-    "postbuild": "node scripts/sync-node-modules.js"
+    "postbuild": "node scripts/generate-keywords.cjs --check && node scripts/check-keywords.cjs && node scripts/sync-node-modules.js"
   },
   "devDependencies": {
-    "lucide-react": "^0.544.0"
+    "lucide-react": "0.544.0"
   },
   "peerDependencies": {
     "@nocobase/client": "2.x",
     "@nocobase/client-v2": "2.x",
-    "@nocobase/server": "2.x"
+    "@nocobase/server": "2.x",
+    "@nocobase/database": "2.x"
   }
 }

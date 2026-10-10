@@ -18,6 +18,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const MDI_PACKAGE = process.env.MDI_PACKAGE || '@mdi/js@7.4.47';
+if (!/^@mdi\/js@\d+\.\d+\.\d+$/.test(MDI_PACKAGE)) throw new Error('MDI_PACKAGE must be an exact @mdi/js version');
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const pluginDir = path.resolve(scriptDir, '..');
 const outFile = path.join(pluginDir, 'src', 'client', 'number-icons.generated.ts');
@@ -60,7 +61,7 @@ function readMdiSource() {
     return fs.readFileSync(installed, 'utf8');
   }
 
-  const cacheDir = path.join(os.tmpdir(), 'nocobase-icon-library-mdi');
+  const cacheDir = path.join(os.tmpdir(), `nocobase-icon-library-mdi-${MDI_PACKAGE.split('@').pop()}`);
   const mdiJsPath = path.join(cacheDir, 'package', 'mdi.js');
   if (fs.existsSync(mdiJsPath)) {
     console.log(`使用缓存：${mdiJsPath}`);
@@ -98,7 +99,7 @@ for (const target of targets) {
 console.log(`MDI 版本：${version}`);
 console.log(`请求数字图标：${targets.length}，命中：${Object.keys(icons).length}`);
 if (missing.length) {
-  console.log(`未找到：${missing.join(', ')}`);
+  throw new Error(`Missing published numeric icons: ${missing.join(', ')}`);
 }
 console.log(`示例：${Object.keys(icons).slice(0, 8).join(', ')}`);
 

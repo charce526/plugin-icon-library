@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * 一键发行脚本：写入发行版本号 -> 编译并打包 -> 输出可上传的发行包。
+ * 本地发布准备脚本：写入版本号 -> 编译并打包 -> 输出安装包及校验文件，不推送或发布。
  *
  * 用法：
- *   node scripts/release.mjs 1.0.1              # 写入版本号、编译、打包，产物在 release/
- *   node scripts/release.mjs 1.0.1 --no-build   # 只写入版本号（CI 或仅需改版本时用）
+ *   node scripts/release.mjs 2.0.0              # 写入版本号、编译、打包，产物在 release/
+ *   node scripts/release.mjs 2.0.0 --no-build   # 只写入版本号（CI 或仅需改版本时用）
  *
  * 编译依赖 NocoBase 工作区（@nocobase/build），脚本会从插件目录逐级向上找到项目根目录，
  * 再执行 `yarn build @xiezuo/plugin-icon-library --tar`；发行包内的 package.json 会带上
@@ -15,6 +15,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import { createHash } from 'node:crypto';
 
 const pluginDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SEMVER = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
@@ -48,7 +50,7 @@ const noBuild = args.includes('--no-build');
 const version = args.find((item) => !item.startsWith('--'));
 
 if (!version || !SEMVER.test(version)) {
-  console.error('用法: node scripts/release.mjs <版本号，例如 1.0.1> [--no-build]');
+  console.error('用法: node scripts/release.mjs <版本号，例如 2.0.0> [--no-build]');
   process.exit(1);
 }
 
@@ -81,6 +83,7 @@ console.log(`[release] 项目根目录：${appRoot}`);
 console.log(`[release] 执行：yarn build ${pkg.name} --tar`);
 const build = spawnSync(`yarn build ${pkg.name} --tar`, {
   cwd: appRoot,
+  env: { ...process.env, PATH: `${path.join(appRoot, 'node_modules', '.bin')}${path.delimiter}${process.env.PATH || ''}` },
   stdio: 'inherit',
   shell: true,
 });
@@ -88,6 +91,11 @@ if (build.status !== 0) {
   console.error(`[release] 编译失败，退出码 ${build.status}`);
   process.exit(build.status ?? 1);
 }
+
+// NocoBase builds declarations after its initial tar step; package them now.
+const require = createRequire(import.meta.url);
+process.chdir(appRoot);
+await require('@nocobase/build/lib/tarPlugin').tarPlugin(pluginDir, console.log);
 
 const releaseDir = path.join(pluginDir, 'release');
 const assetName = `${pkg.name.split('/').pop()}-${version}.tgz`;
@@ -126,11 +134,12 @@ if (!tarball) {
 fs.mkdirSync(releaseDir, { recursive: true });
 const assetPath = path.join(releaseDir, assetName);
 fs.copyFileSync(tarball, assetPath);
+const checksum = createHash('sha256').update(fs.readFileSync(assetPath)).digest('hex');
+fs.writeFileSync(`${assetPath}.sha256`, `${checksum}  ${assetName}\n`);
 
 const size = (fs.statSync(assetPath).size / 1024).toFixed(1);
 console.log('');
 console.log(`[release] 发行包已生成：${path.relative(pluginDir, assetPath)} (${size} KB)`);
-console.log('[release] 后续步骤：');
-console.log(`  1. 提交并推 tag：git add -A && git commit -m "chore: release ${version}" && git tag v${version} && git push origin main --tags`);
-console.log('  2. 推送 tag 后 GitHub Actions 会自动创建 Release 并上传发行包；');
-console.log(`     也可手动上传：把 release/${assetName} 拖到 Release 附件中。`);
+console.log(`[release] SHA-256：${checksum}`);
+console.log('[release] 本地准备完成；尚未提交、创建标签、推送或发布。');
+console.log('  验收并确认后，再按 RELEASE_CHECKLIST.md 执行发布步骤。');

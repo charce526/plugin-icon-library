@@ -1,10 +1,2 @@
-import React from 'react';
-export interface ExtendedIconPickerProps {
-    value?: string;
-    onChange?: (value: string | null) => void;
-    disabled?: boolean;
-    suffix?: React.ReactNode;
-    iconSize?: number;
-    searchable?: boolean;
-}
-export declare const ExtendedIconPicker: React.ForwardRefExoticComponent<Partial<ExtendedIconPickerProps> & React.RefAttributes<unknown>>;
+export { LegacyIconPicker as ExtendedIconPicker } from '../client-v2/legacy';
+export type { ExtendedIconPickerProps } from '../client-v2/createPicker';
