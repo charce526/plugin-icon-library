@@ -4,7 +4,7 @@ English | [简体中文](./README.md)
 
 A unified icon picker for NocoBase menus, buttons, tabs and icon fields, with Chinese search, SVG imports, and color and size settings.
 
-Maintained by [Xiezuo BIM](https://www.xzbim.cn). Package: `@xiezuo/plugin-icon-library`. Version: **2.0.0**.
+Maintained by [Xiezuo BIM](https://www.xzbim.cn). Package: `@xiezuo/plugin-icon-library`. Version: **2.0.1**.
 
 ## Features
 
@@ -19,13 +19,13 @@ Maintained by [Xiezuo BIM](https://www.xzbim.cn). Package: `@xiezuo/plugin-icon-
 
 ## Compatibility
 
-Targets NocoBase 2.x. The current build and regression baseline is **NocoBase 2.2.10**, with React 18. Use the Node.js version required by your NocoBase installation; validate other minor releases in a test environment first.
+Supports **NocoBase 2.x starting with 2.2.0** (`>=2.2.0 <3.0.0`), across V1 and V2 pages. Version 2.2.26 is one compatibility reference, not the minimum requirement. The build toolchain uses NocoBase 2.2.10 and React 18. Use the Node.js version required by your NocoBase installation.
 
 The package contains V1, V2 and server entry points. V2 pages use `/v2/admin/`.
 
 ## Installation and upgrade
 
-1. Get the corresponding package from [GitHub Releases](https://github.com/charce526/plugin-icon-library/releases). The 2.0.0 package is `plugin-icon-library-2.0.0.tgz`.
+1. Get the corresponding package from [GitHub Releases](https://github.com/charce526/plugin-icon-library/releases). The 2.0.1 package is `plugin-icon-library-2.0.1.tgz`.
 2. Back up the application database and existing plugin version before upgrading.
 3. Upload the package in the NocoBase plugin manager, install or upgrade, and enable it.
 4. Complete any NocoBase upgrade steps, restart as instructed, and refresh the browser.
@@ -99,17 +99,21 @@ From the plugin directory:
 ```sh
 node scripts/generate-keywords.cjs --check
 node scripts/check-keywords.cjs
+node scripts/check-v1.cjs --version=2.2.0
+node scripts/check-v1.cjs --version=2.2.10
+node scripts/check-v1.cjs --version=2.2.26
+node scripts/check-v2.cjs --version=2.2.0
 node scripts/check-v2.cjs
 node scripts/check-v2.cjs --legacy
 node scripts/check-server.cjs
 ```
 
-Server tests require SQLite by default. Set `ICON_TEST_MARIADB=1` to use local MariaDB with isolated table prefixes and cleanup. Client tests use React, Ant Design, Formily, JSDOM and the installed V2 Icon implementation. V1 tests use a compatibility adapter and do not replace acceptance in an authenticated V1 page.
+Server tests require SQLite by default. Set `ICON_TEST_MARIADB=1` to use local MariaDB with isolated table prefixes and cleanup. Client tests use React, Ant Design, Formily and JSDOM. `check-v1.cjs --version=VERSION` covers official V1 icon controls and schema contexts from 2.2.0, 2.2.10 and 2.2.26. `check-v2.cjs --version=2.2.0` uses official V2 Icon and Plugin sources from the minimum supported version. Reference sources are SHA-256 pinned and downloaded into an ignored cache on first use. Application lifecycle and some registration facilities remain fixtures. Default V2 tests use the locally installed version; `--legacy` adds shared-picker coverage. Component tests do not replace installation, upgrade and authenticated page testing in complete applications.
 
 Prepare a local package from the plugin directory:
 
 ```sh
-node scripts/release.mjs 2.0.0
+node scripts/release.mjs 2.0.1
 node scripts/check-package.cjs
 ```
 

@@ -1,0 +1,26 @@
+{
+  "defaultVersion": "2.2.26",
+  "versions": {
+    "2.2.0": {
+      "icon/Icon.tsx": "0ccca36767b5c55d7b9543210d37ff4476f81b3fb13e646a7e27e3d95d6200cc",
+      "schema-component/antd/icon-picker/IconPicker.tsx": "e29a86c9c52b7792992eed62f43c3d8a6453b4197cd9d6e304fafde0547c9dcc",
+      "schema-component/core/SchemaComponentOptions.tsx": "7093957c6e425c7526ddcd407e8a990fa81bbddbdcf9389890ed88ce4c4e127d"
+    },
+    "2.2.10": {
+      "icon/Icon.tsx": "0ccca36767b5c55d7b9543210d37ff4476f81b3fb13e646a7e27e3d95d6200cc",
+      "schema-component/antd/icon-picker/IconPicker.tsx": "e29a86c9c52b7792992eed62f43c3d8a6453b4197cd9d6e304fafde0547c9dcc",
+      "schema-component/core/SchemaComponentOptions.tsx": "7093957c6e425c7526ddcd407e8a990fa81bbddbdcf9389890ed88ce4c4e127d"
+    },
+    "2.2.26": {
+      "icon/Icon.tsx": "0ccca36767b5c55d7b9543210d37ff4476f81b3fb13e646a7e27e3d95d6200cc",
+      "schema-component/antd/icon-picker/IconPicker.tsx": "e29a86c9c52b7792992eed62f43c3d8a6453b4197cd9d6e304fafde0547c9dcc",
+      "schema-component/core/SchemaComponentOptions.tsx": "7093957c6e425c7526ddcd407e8a990fa81bbddbdcf9389890ed88ce4c4e127d"
+    }
+  },
+  "v2Versions": {
+    "2.2.0": {
+      "components/Icon.tsx": "21343e3a2a52cff0dd04518d02c24bd7b40e91d093209fab1396ff9ee35565de",
+      "Plugin.ts": "2581ab8a3f1098ad0fa48b7aa414d01a12e8219b825965b942af9bc6299f5a79"
+    }
+  }
+}

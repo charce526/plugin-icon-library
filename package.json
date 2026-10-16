@@ -1,6 +1,6 @@
 {
   "name": "@xiezuo/plugin-icon-library",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "displayName": "扩展图标库",
   "displayName.zh-CN": "扩展图标库",
   "displayName.en-US": "Extended Icon Library",
@@ -55,7 +55,7 @@
   "nocobase": {
     "defaultEnabled": false,
     "supportedVersions": [
-      "2.x"
+      ">=2.2.0 <3.0.0"
     ],
     "editionLevel": 0
   },
@@ -66,9 +66,9 @@
     "lucide-react": "0.544.0"
   },
   "peerDependencies": {
-    "@nocobase/client": "2.x",
-    "@nocobase/client-v2": "2.x",
-    "@nocobase/server": "2.x",
-    "@nocobase/database": "2.x"
+    "@nocobase/client": ">=2.2.0 <3.0.0",
+    "@nocobase/client-v2": ">=2.2.0 <3.0.0",
+    "@nocobase/server": ">=2.2.0 <3.0.0",
+    "@nocobase/database": ">=2.2.0 <3.0.0"
   }
 }

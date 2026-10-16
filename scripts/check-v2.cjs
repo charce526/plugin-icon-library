@@ -20,10 +20,28 @@ function expandDetails(){const heading=screen.queryByText('图标详情',{exact:
 const root = path.resolve(__dirname, '..');
 const legacy = process.argv.includes('--legacy');
 const lane = legacy ? 'client' : 'client-v2';
-const core = path.dirname(require.resolve('@nocobase/client-v2/package.json'));
+const referenceVersion = process.argv.find((arg) => arg.startsWith('--version='))?.slice('--version='.length);
+assert(!referenceVersion || !legacy, 'Use check-v1.cjs for pinned V1 controls');
+const referenceFiles = referenceVersion && require('./v1-reference-manifest.json').v2Versions[referenceVersion];
+assert(!referenceVersion || referenceFiles, 'Unsupported V2 reference version: ' + referenceVersion);
+const core = referenceVersion
+  ? path.join(root, 'release/validation', 'nocobase-v' + referenceVersion + '-client-v2')
+  : path.join(path.dirname(require.resolve('@nocobase/client-v2/package.json')), 'src');
+async function prepareReferences() {
+  for (const [relative, expected] of Object.entries(referenceFiles || {})) {
+    const file = path.join(core, relative);
+    if (!fs.existsSync(file)) {
+      const response = await fetch('https://raw.githubusercontent.com/nocobase/nocobase/v' + referenceVersion + '/packages/core/client-v2/src/' + relative);
+      assert(response.ok, 'Cannot fetch V2 reference: ' + relative);
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, Buffer.from(await response.arrayBuffer()));
+    }
+    assert.equal(require('node:crypto').createHash('sha256').update(fs.readFileSync(file)).digest('hex'), expected, 'V2 source hash mismatch: ' + relative);
+  }
+}
 
 function coreSource(relative) {
-  const filename = path.join(core, 'src', relative);
+  const filename = path.join(core, relative);
   const code = ts.transpileModule(fs.readFileSync(filename, 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React, esModuleInterop: true },
   }).outputText;
@@ -33,6 +51,7 @@ function coreSource(relative) {
 }
 
 async function main() {
+  await prepareReferences();
   const i18n=require('i18next');
   await i18n.init({lng:'zh-CN',fallbackLng:'en-US',resources:{},interpolation:{escapeValue:false}});
   require('react-i18next').setI18n(i18n);
@@ -48,7 +67,7 @@ async function main() {
   const define = (name, dependencies, factory) => {
       assert.equal(name, legacy ? '@xiezuo/plugin-icon-library' : '@xiezuo/plugin-icon-library/client-v2');
       assert(legacy || !dependencies.includes('@nocobase/client'), 'V2 bundle must not depend on the legacy registry');
-      bundle = factory(...dependencies.map((name) => name === (legacy ? '@nocobase/client' : '@nocobase/client-v2') ? { ...iconModule, Icon:TrackedIcon, Plugin, IconFieldModel: class IconFieldModel { constructor(props){this.props=props;} }, useCurrentUserContext: () => ({data:{data:{id:123}}}) } : require(name)));
+      bundle = factory(...dependencies.map((name) => name === (legacy ? '@nocobase/client' : '@nocobase/client-v2') ? { ...iconModule, Icon:TrackedIcon, Plugin, useApp: () => app, IconFieldModel: class IconFieldModel { constructor(props){this.props=props;} }, useCurrentUserContext: () => ({data:{data:{id:123}}}) } : require(name)));
     };
   define.amd = {};
   vm.runInNewContext(fs.readFileSync(path.join(root, 'dist', lane, 'index.js'), 'utf8'), {
@@ -288,6 +307,6 @@ async function main() {
   const signedOut={...app,apiClient:{auth:{getToken:()=>''},async request(){signedOutRequests++;return {data:{data:[]}};}}};
   await new bundle.default({},signedOut).load();
   assert.equal(signedOutRequests,0,'Signed-out plugin does not request private icons');
-  console.log(lane + ' PASS: entry, 1426 icons, registration, search, shared SVG, persisted color/size and reload, size reset and cancel, apply/cancel, click-only preview, compact details, clear and disabled');
+  console.log(lane + (referenceVersion ? ' ' + referenceVersion : '') + ' PASS: entry, 1426 icons, registration, search, shared SVG, persisted color/size and reload, size reset and cancel, apply/cancel, click-only preview, compact details, clear and disabled');
 }
 main().then(() => { cleanup(); dom.window.close(); }).catch((error) => { console.error(error.message); process.exitCode = 1; cleanup(); dom.window.close(); });

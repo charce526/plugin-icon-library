@@ -4,7 +4,7 @@
 
 为 NocoBase 的菜单、按钮、页签和图标字段提供统一的图标选择器，支持中文搜索、自定义 SVG，以及图标颜色和大小设置。
 
-由 [偕作 BIM](https://www.xzbim.cn) 开发维护。插件包名：`@xiezuo/plugin-icon-library`，当前版本：**2.0.0**。
+由 [偕作 BIM](https://www.xzbim.cn) 开发维护。插件包名：`@xiezuo/plugin-icon-library`，当前版本：**2.0.1**。
 
 ## 功能
 
@@ -19,13 +19,13 @@
 
 ## 环境与兼容性
 
-面向 NocoBase 2.x，当前构建与回归基线为 **NocoBase 2.2.10**、React 18。请使用对应 NocoBase 版本要求的 Node.js 环境；其他 NocoBase 小版本应先在测试环境验收。
+支持 **NocoBase 2.2.0 及以上的 2.x 版本**（`>=2.2.0 <3.0.0`），覆盖 V1/V2 页面。2.2.26 是兼容验证版本之一，不是最低版本限制。当前构建工具链为 NocoBase 2.2.10、React 18；请使用对应 NocoBase 版本要求的 Node.js 环境。
 
 插件同时提供 V1、V2 客户端及服务端入口。V2 页面从 `/v2/admin/` 进入。
 
 ## 安装与升级
 
-1. 从 [GitHub Releases](https://github.com/charce526/plugin-icon-library/releases) 获取对应版本安装包。2.0.0 的安装包文件名为 `plugin-icon-library-2.0.0.tgz`。
+1. 从 [GitHub Releases](https://github.com/charce526/plugin-icon-library/releases) 获取对应版本安装包。2.0.1 的安装包文件名为 `plugin-icon-library-2.0.1.tgz`。
 2. 升级已有应用前，备份应用数据库和现有插件版本。
 3. 在 NocoBase 插件管理器中上传安装包，安装或升级并启用插件。
 4. 按 NocoBase 提示完成升级、重启服务，并刷新浏览器。
@@ -99,17 +99,21 @@ yarn build @xiezuo/plugin-icon-library
 ```sh
 node scripts/generate-keywords.cjs --check
 node scripts/check-keywords.cjs
+node scripts/check-v1.cjs --version=2.2.0
+node scripts/check-v1.cjs --version=2.2.10
+node scripts/check-v1.cjs --version=2.2.26
+node scripts/check-v2.cjs --version=2.2.0
 node scripts/check-v2.cjs
 node scripts/check-v2.cjs --legacy
 node scripts/check-server.cjs
 ```
 
-服务端测试默认需要 SQLite 驱动；本地已有 MariaDB 时可设置 `ICON_TEST_MARIADB=1`，脚本使用隔离表前缀并清理测试表。前端测试使用 React、Ant Design、Formily、JSDOM 和已安装的 V2 Icon 实现；V1 回归使用兼容适配器，不能代替真实 V1 登录页面验收。
+服务端测试默认需要 SQLite 驱动；本地已有 MariaDB 时可设置 `ICON_TEST_MARIADB=1`，脚本使用隔离表前缀并清理测试表。前端测试使用 React、Ant Design、Formily 和 JSDOM。`check-v1.cjs --version=版本号` 覆盖 2.2.0、2.2.10、2.2.26 官方 V1 图标控件与组件上下文；`check-v2.cjs --version=2.2.0` 使用最低支持版本的官方 V2 Icon 与 Plugin 源码。引用源码固定 SHA-256，首次执行下载到本地忽略目录；应用生命周期及部分注册设施仍为测试底座。默认 V2 测试使用本地安装版本，`--legacy` 为共享选择器补充回归。组件测试不能代替各版本完整应用的安装、升级及真实页面验收。
 
 在插件目录准备版本安装包：
 
 ```sh
-node scripts/release.mjs 2.0.0
+node scripts/release.mjs 2.0.1
 node scripts/check-package.cjs
 ```
 

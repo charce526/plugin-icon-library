@@ -1,10 +1,11 @@
 // Compatibility adapter: implementation is shared with V2; only the runtime differs.
-import { Icon, Plugin, icons, hasIcon, useCurrentUserContext } from '@nocobase/client';
+import { Icon, IconPicker, Plugin, icons, hasIcon, useApp, useCurrentUserContext } from '@nocobase/client';
 import { extendedIcons } from './builtins';
 import { createIconPicker } from './createPicker';
 import { createCustomStore } from './customIcons';
 import { installPickers } from './registration';
 import { localeResources } from './locale';
+import { bindLegacyPickerReference } from './legacyReferences';
 
 export const LegacyIconPicker = createIconPicker({ Icon, icons, hasIcon });
 export default class PluginIconLibraryLegacy extends Plugin {
@@ -13,7 +14,13 @@ export default class PluginIconLibraryLegacy extends Plugin {
     Icon.register(extendedIcons);
     const custom = createCustomStore(this.app.apiClient, (components) => Icon.register(components));
     const Picker = createIconPicker({ Icon, icons, hasIcon, custom, useUser: useCurrentUserContext, appName: this.app.name });
-    installPickers(this.app, Picker);
+    const bindReferences = (components?: Record<string, any>) => {
+      for (const name of ['IconPicker', 'MobileMenuSettingsIconPicker']) {
+        bindLegacyPickerReference(components?.[name], this.app, Picker, useApp);
+      }
+    };
+    bindReferences({ IconPicker });
+    installPickers(this.app, Picker, bindReferences);
     await custom.refresh().catch(() => {});
   }
 }
