@@ -4,7 +4,7 @@ English | [简体中文](./README.md)
 
 A unified icon picker for NocoBase menus, buttons, tabs and icon fields, with Chinese search, SVG imports, and color and size settings.
 
-Maintained by [Xiezuo BIM](https://www.xzbim.cn). Package: `@xiezuo/plugin-icon-library`. Version: **2.0.1**.
+Maintained by [Xiezuo BIM](https://www.xzbim.cn). Package: `@xiezuo/plugin-icon-library`. Version: **2.0.2**.
 
 ## Features
 
@@ -25,7 +25,7 @@ The package contains V1, V2 and server entry points. V2 pages use `/v2/admin/`.
 
 ## Installation and upgrade
 
-1. Get the corresponding package from [GitHub Releases](https://github.com/charce526/plugin-icon-library/releases). The 2.0.1 package is `plugin-icon-library-2.0.1.tgz`.
+1. Get the corresponding package from [GitHub Releases](https://github.com/charce526/plugin-icon-library/releases). The 2.0.2 package is `plugin-icon-library-2.0.2.tgz`.
 2. Back up the application database and existing plugin version before upgrading.
 3. Upload the package in the NocoBase plugin manager, install or upgrade, and enable it.
 4. Complete any NocoBase upgrade steps, restart as instructed, and refresh the browser.
@@ -105,6 +105,8 @@ node scripts/check-v1.cjs --version=2.2.26
 node scripts/check-v2.cjs --version=2.2.0
 node scripts/check-v2.cjs
 node scripts/check-v2.cjs --legacy
+node scripts/check-v2.cjs --mixed
+node scripts/check-v2.cjs --mixed --legacy
 node scripts/check-server.cjs
 ```
 
@@ -113,7 +115,7 @@ Server tests require SQLite by default. Set `ICON_TEST_MARIADB=1` to use local M
 Prepare a local package from the plugin directory:
 
 ```sh
-node scripts/release.mjs 2.0.1
+node scripts/release.mjs 2.0.2
 node scripts/check-package.cjs
 ```
 

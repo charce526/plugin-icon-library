@@ -19,6 +19,7 @@ const { render, fireEvent, screen, within, waitFor, cleanup } = require('@testin
 function expandDetails(){const heading=screen.queryByText('图标详情',{exact:true});if(heading && heading.closest('[aria-expanded]')?.getAttribute('aria-expanded') !== 'true') fireEvent.click(heading);}
 const root = path.resolve(__dirname, '..');
 const legacy = process.argv.includes('--legacy');
+const mixed = process.argv.includes('--mixed');
 const lane = legacy ? 'client' : 'client-v2';
 const referenceVersion = process.argv.find((arg) => arg.startsWith('--version='))?.slice('--version='.length);
 assert(!referenceVersion || !legacy, 'Use check-v1.cjs for pinned V1 controls');
@@ -76,8 +77,59 @@ async function main() {
   const settings = { components: {}, registerComponents(components) { Object.assign(this.components, components); } };
   const models={}; const imported=[];
   const apiClient={async request({url,data}){if(url==='iconLibrary:import'){imported.push(data);return {data:{data}};}return {data:{data:imported}};}};
+  let otherIcon;
+  if (mixed) {
+    const version = '2.2.0', relative = 'icon/Icon.tsx';
+    const expected = require('./v1-reference-manifest.json').versions[version][relative];
+    const filename = path.join(root, 'release/validation', 'nocobase-v' + version + '-client', relative);
+    if (!fs.existsSync(filename)) {
+      const response = await fetch('https://raw.githubusercontent.com/nocobase/nocobase/v' + version + '/packages/core/client/src/' + relative);
+      assert(response.ok, 'Cannot fetch mixed runtime reference: ' + relative);
+      fs.mkdirSync(path.dirname(filename), { recursive: true });
+      fs.writeFileSync(filename, Buffer.from(await response.arrayBuffer()));
+    }
+    const code = fs.readFileSync(filename, 'utf8');
+    assert.equal(require('node:crypto').createHash('sha256').update(code).digest('hex'), expected);
+    const mod = { exports: {} };
+    vm.runInThisContext('(function(require,module,exports){' + ts.transpileModule(code, { compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React, esModuleInterop: true } }).outputText + '\n})')(require, mod, mod.exports);
+    otherIcon = mod.exports;
+  }
   const app = {name:'test', i18n,apiClient,eventBus:new EventTarget(),flowEngine: { context:{user:{id:123}},flowSettings: settings,registerModels(value){Object.assign(models,value);} }, components: {}, addComponents(components) { Object.assign(this.components, components); } };
+  if (mixed) {
+    const modules = { '@nocobase/client': legacy ? iconModule : otherIcon, '@nocobase/client-v2': legacy ? otherIcon : iconModule };
+    const loader = (id) => modules[id]; loader.defined = (id) => Boolean(modules[id]);
+    app.requirejs = { requirejs: loader };
+  }
   await new bundle.default({}, app).load();
+  if (mixed) {
+    const Picker = settings.components.IconPicker;
+    for (const kind of ['color', 'size']) {
+      let selected;
+      render(React.createElement(Picker, { value: 'XzTerminalOutlined', onChange(value) { selected = value; } }));
+      fireEvent.click(screen.getByRole('button', { name: '选择图标' })); expandDetails();
+      if (kind === 'color') fireEvent.change(screen.getByLabelText('图标颜色'), { target: { value: '#ef4444' } });
+      else fireEvent.click(screen.getByRole('radio', { name: '加大', exact: true }));
+      fireEvent.click(screen.getByRole('button', { name: /^应\s*用$/ }));
+      await waitFor(() => assert(selected?.startsWith('XzCustom'))); cleanup();
+      // V1 Action/Action.Link use this native Icon expression for their button icon.
+      const { Button, Tabs, Menu } = require('antd');
+      const rendered = render(React.createElement('div', null,
+        React.createElement(Button, { icon: React.createElement(otherIcon.Icon, { type: selected }), 'data-testid': 'v1-action' }, '编辑'),
+        React.createElement(Tabs, { items: [{ key: 'page', label: React.createElement(iconModule.Icon, { type: selected }), children: '页面' }] }),
+        React.createElement(Menu, { items: [{ key: 'menu', icon: React.createElement(iconModule.Icon, { type: selected }), label: '菜单' }] })));
+      const svg = screen.getByTestId('v1-action').querySelector('svg');
+      assert(svg, 'Mixed runtime button must render the saved ' + kind + ' variant');
+      if (kind === 'color') assert.equal(svg.getAttribute('stroke'), '#ef4444');
+      else assert.equal(svg.getAttribute('width'), '24');
+      assert(rendered.container.querySelector('.ant-tabs-tab svg'));
+      assert(rendered.container.querySelector('.ant-menu-item svg')); cleanup();
+      otherIcon.icons.delete(selected.toLowerCase()); iconModule.icons.delete(selected.toLowerCase());
+      await new bundle.default({}, app).load();
+      assert(otherIcon.hasIcon(selected), 'Persisted variants must load into the button registry after reload');
+      assert(iconModule.hasIcon(selected));
+    }
+    console.log(lane + ' MIXED PASS: color, size, native action button, page/tab/menu and persisted reload'); return;
+  }
   assert.equal([...iconModule.icons.keys()].filter((name) => name.startsWith('xz')).length, 1426);
   const picker = settings.components.IconPicker;
   assert.equal(app.components.IconPicker, picker);
@@ -309,4 +361,4 @@ async function main() {
   assert.equal(signedOutRequests,0,'Signed-out plugin does not request private icons');
   console.log(lane + (referenceVersion ? ' ' + referenceVersion : '') + ' PASS: entry, 1426 icons, registration, search, shared SVG, persisted color/size and reload, size reset and cancel, apply/cancel, click-only preview, compact details, clear and disabled');
 }
-main().then(() => { cleanup(); dom.window.close(); }).catch((error) => { console.error(error.message); process.exitCode = 1; cleanup(); dom.window.close(); });
+main().then(() => { cleanup(); dom.window.close(); if (mixed) process.exit(0); }).catch((error) => { console.error(error.message); process.exitCode = 1; cleanup(); dom.window.close(); if (mixed) process.exit(1); });

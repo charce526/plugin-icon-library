@@ -5,12 +5,14 @@ import { createCustomStore } from './customIcons';
 import { installPickers } from './registration';
 import { createIconFieldModel } from './models/IconFieldModel';
 import { localeResources } from './locale';
+import { createIconRegistration } from './iconRegistration';
 
 export default class PluginIconLibraryClientV2 extends Plugin<any, Application> {
   async load() {
     Object.entries(localeResources).forEach(([language, resources]) => this.app.i18n.addResources(language, '@xiezuo/plugin-icon-library', resources));
-    registerIcons(extendedIcons);
-    const custom = createCustomStore(this.app.apiClient, registerIcons);
+    const register = createIconRegistration(this.app, registerIcons);
+    register(extendedIcons);
+    const custom = createCustomStore(this.app.apiClient, register);
     const Picker = createIconPicker({ Icon, icons, hasIcon, custom, useUser: useCurrentUserContext,
       getUserId: () => (this.app.flowEngine.context as any).user?.id, appName: this.app.name });
     installPickers(this.app, Picker);

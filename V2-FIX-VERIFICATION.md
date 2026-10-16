@@ -139,3 +139,21 @@ check-v2.cjs 增加 --version=2.2.0，固定哈希加载最低版本的官方 Ic
 ## 2026-10-16：2.0.1 发行构建
 
 用户已授权打包并发布。2.0.1 双客户端、服务端及声明构建成功；包内 50 个文件与当前 dist、说明文件及许可证一致，SHA-256 为 0b49452fb199f1f77728ef7090eb809ad1d5e8b30d04fe39b3fb0a908326807a。新构建再次通过 V1 2.2.0/2.2.10/2.2.26 专项、V2 2.2.0 桌面完整组件回归和 MariaDB 服务端回归。日志前缀 release/validation/release-2.0.1-，不进入 Git 或发行包。支持目标与完整应用实机验收限制见 RELEASE_CHECKLIST.md；此前“未发布”段落为对应日期的历史状态。
+
+
+## 2026-10-16：V1 按钮颜色及大小变体空白
+
+用户确认目标环境升级重启后仍出现 V1 按钮空白，V1 页面/页签及 V2 按钮正常。本地开发服务可访问，其既有 V1 编辑按钮可显示红色 24px 图标。尝试目标浏览器页面连续超时，尚未完成目标应用的按钮保存现场验证；未改写目标应用配置或业务数据。通过只读下载目标公开前端文件，确认 V1 Action 内部 Icon 和 V2 组件 Icon 分别使用独立注册表。
+
+扩展 check-v2.cjs --mixed / --mixed --legacy：以固定哈希的官方 V1 Icon 创建另一套独立注册表，通过真实选择器保存颜色和大小变体，再使用 V1 原生 Icon 表达式及 Ant Design 按钮渲染，同时检查页签、菜单；清空自定义标识后重新载入插件，验证持久化恢复。旧构建复现 Mixed runtime button must render the saved color variant。此测试模拟混合运行时，不是完整 Action 生命周期或目标现场验收。
+
+createIconRegistration 通过当前应用 RequireJS 已加载的公开 @nocobase/client 和 @nocobase/client-v2 模块同步注册内置及自定义图标；V1/V2 入口均使用同一注册逻辑。只访问 defined 模块，不触发额外下载，不静态依赖另一客户端，不修改框架代码。双向混合运行时颜色、大小、按钮、页签/菜单及重新载入回归通过。日志：release/validation/mixed-icons-before.log、mixed-icons-after.log、mixed-icons-legacy.log。
+
+本轮仅编译并同步本地开发文件，保持包版本 2.0.1；未重新压缩、提交、推送或覆盖 GitHub 发行包。
+
+补充最终检查：新构建通过 V1 2.2.0、V1 2.2.26 旧引用及字段持久化专项，以及 V2 2.2.0 桌面完整组件回归；日志为 mixed-icons-v1-min.log、mixed-icons-v1-target.log、mixed-icons-v2-min.log。git diff --check 通过。已发布 2.0.1 安装包 SHA-256 保持 0b49452fb199f1f77728ef7090eb809ad1d5e8b30d04fe39b3fb0a908326807a。
+
+
+## 2026-10-16：2.0.2 发行准备
+
+用户授权更新为 2.0.2、提交并发布，随后自行验证目标环境。新包 51 个文件、321,364 字节，SHA-256 为 31c830998f66809a3e8c6e4f23e06ccc8268eab5c749e126adf94afb6a141c07。安装包与当前 dist 完全一致；两个客户端及服务端代码与上一轮已验证修复逐字节相同，发布前再次通过双向混合运行时专项。具体范围与目标环境待验证项见 RELEASE_CHECKLIST.md。

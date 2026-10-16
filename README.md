@@ -4,7 +4,7 @@
 
 为 NocoBase 的菜单、按钮、页签和图标字段提供统一的图标选择器，支持中文搜索、自定义 SVG，以及图标颜色和大小设置。
 
-由 [偕作 BIM](https://www.xzbim.cn) 开发维护。插件包名：`@xiezuo/plugin-icon-library`，当前版本：**2.0.1**。
+由 [偕作 BIM](https://www.xzbim.cn) 开发维护。插件包名：`@xiezuo/plugin-icon-library`，当前版本：**2.0.2**。
 
 ## 功能
 
@@ -25,7 +25,7 @@
 
 ## 安装与升级
 
-1. 从 [GitHub Releases](https://github.com/charce526/plugin-icon-library/releases) 获取对应版本安装包。2.0.1 的安装包文件名为 `plugin-icon-library-2.0.1.tgz`。
+1. 从 [GitHub Releases](https://github.com/charce526/plugin-icon-library/releases) 获取对应版本安装包。2.0.2 的安装包文件名为 `plugin-icon-library-2.0.2.tgz`。
 2. 升级已有应用前，备份应用数据库和现有插件版本。
 3. 在 NocoBase 插件管理器中上传安装包，安装或升级并启用插件。
 4. 按 NocoBase 提示完成升级、重启服务，并刷新浏览器。
@@ -105,6 +105,8 @@ node scripts/check-v1.cjs --version=2.2.26
 node scripts/check-v2.cjs --version=2.2.0
 node scripts/check-v2.cjs
 node scripts/check-v2.cjs --legacy
+node scripts/check-v2.cjs --mixed
+node scripts/check-v2.cjs --mixed --legacy
 node scripts/check-server.cjs
 ```
 
@@ -113,7 +115,7 @@ node scripts/check-server.cjs
 在插件目录准备版本安装包：
 
 ```sh
-node scripts/release.mjs 2.0.1
+node scripts/release.mjs 2.0.2
 node scripts/check-package.cjs
 ```
 
